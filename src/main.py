@@ -27,9 +27,9 @@ def prepare_data(df):
 
     return df
 
-def main():
+def main(data = "data/train.csv"):
 
-    train_data= prepare_data(pd.read_csv("data/train.csv"))
+    train_data= prepare_data(pd.read_csv(data))
     # test_data = prepare_data(pd.read_csv("data/test.csv"))
 
     corr_plot(train_data)
