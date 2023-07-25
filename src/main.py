@@ -1,6 +1,7 @@
 import tensorflow as tf
 import pandas as pd
 import matplotlib
+import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 import tempfile
@@ -10,14 +11,18 @@ import sklearn.metrics as sk_metrics
 from logistic_regression_tf import Normalize, LogisticRegression
 from plot_utils import confusion_matrix_plot, range_train_test_plot, corr_plot
 
-matplotlib.rcParams['figure.figsize'] = [9, 6]
-pd.set_option('display.max_rows', 500)
+
 
 def prepare_data(df):
 
     df.set_index('PassengerId', inplace = True)
-    df['Age'] = df['Age'].fillna(df['Age'].mean())
 
+    age_by_class_and_sex = df.pivot_table('Age', index=['Pclass', 'Sex'], aggfunc=['min', 'mean', 'median', 'max', 'count'])
+
+    df['Age'] = df.apply(
+        lambda row: age_by_class_and_sex.loc[row['Pclass'], row['Sex']]['mean']['Age'] if np.isnan(row['Age']) else row['Age'],
+        axis=1
+    )
 
     sex_one_hot = pd.get_dummies(df['Sex'])
 
@@ -29,7 +34,12 @@ def prepare_data(df):
 
 def main(data = "data/train.csv"):
 
-    train_data= prepare_data(pd.read_csv(data))
+    raw_data = pd.read_csv(data)
+
+    # print(raw_data.head())
+
+    train_data= prepare_data(raw_data)
+
     # test_data = prepare_data(pd.read_csv("data/test.csv"))
 
     corr_plot(train_data)
@@ -107,6 +117,10 @@ def main(data = "data/train.csv"):
 
 
 if __name__ == "__main__":
+    matplotlib.rcParams['figure.figsize'] = [9, 6]
+    pd.set_option('display.max_rows', 500)
+    pd.set_option('display.max_columns', 500)
+
     main()
 #
 # print(train_data.isnull().sum())
