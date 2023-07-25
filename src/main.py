@@ -1,16 +1,10 @@
-import tensorflow as tf
-import pandas as pd
 import matplotlib
 import numpy as np
-from matplotlib import pyplot as plt
-import seaborn as sns
-import tempfile
-import os
-import sklearn.metrics as sk_metrics
+import pandas as pd
+import tensorflow as tf
 
 from logistic_regression_tf import Normalize, LogisticRegression
 from plot_utils import confusion_matrix_plot, range_train_test_plot, corr_plot
-
 
 
 def prepare_data(df):

@@ -1,8 +1,7 @@
-from matplotlib import pyplot as plt
 import seaborn as sns
-import tempfile
-import os
 import sklearn.metrics as sk_metrics
+from matplotlib import pyplot as plt
+
 
 def corr_plot(train_data):
     f, ax = plt.subplots(figsize=(10, 8))

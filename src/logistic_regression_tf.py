@@ -1,9 +1,10 @@
 import tensorflow as tf
-import pandas as pd
+
 
 class Normalize(tf.Module):
     def __init__(self, x):
         # Initialize the mean and standard deviation for normalization
+        super().__init__()
         self.mean = tf.Variable(tf.math.reduce_mean(x, axis=0), name="Mean")
         self.std = tf.Variable(tf.math.reduce_std(x, axis=0), name="Std")
 
@@ -19,6 +20,7 @@ class Normalize(tf.Module):
 class LogisticRegression(tf.Module):
 
     def __init__(self):
+        super().__init__()
         self.built = False
 
     def __call__(self, x, train=True):
