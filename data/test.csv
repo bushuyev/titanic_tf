@@ -18,7 +18,7 @@ PassengerId,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked
 908,2,"Keane, Mr. Daniel",male,35,0,0,233734,12.35,,Q
 909,3,"Assaf, Mr. Gerios",male,21,0,0,2692,7.225,,C
 910,3,"Ilmakangas, Miss. Ida Livija",female,27,1,0,STON/O2. 3101270,7.925,,S
-911,3,"Assaf Khalil, Mrs. Mariana (Miriam"")""",female,45,0,0,2696,7.225,,C
+911,3,"Assaf Khalil, Mrs. Mariana ("Miriam")",female,45,0,0,2696,7.225,,C
 912,1,"Rothschild, Mr. Martin",male,55,1,0,PC 17603,59.4,,C
 913,3,"Olsen, Master. Artur Karl",male,9,0,1,C 17368,3.1708,,S
 914,1,"Flegenheim, Mrs. Alfred (Antoinette)",female,,0,0,PC 17598,31.6833,,S

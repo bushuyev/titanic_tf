@@ -58,14 +58,14 @@ class LogisticRegression(tf.Module):
         ce = tf.nn.sigmoid_cross_entropy_with_logits(labels=y, logits=y_pred)
         return tf.reduce_mean(ce)
 
-    def train(self, epochs, train_dataset, test_dataset, learning_rate = 0.01):
+    def train(self, epochs, train_dataset, valid_dataset, learning_rate = 0.01):
 
-        train_losses, test_losses = [], []
-        train_accs, test_accs = [], []
+        train_losses, valid_losses = [], []
+        train_accs, valid_accs = [], []
         # Set up the training loop and begin training
         for epoch in range(epochs):
             batch_losses_train, batch_accs_train = [], []
-            batch_losses_test, batch_accs_test = [], []
+            batch_losses_valid, batch_accs_valid = [], []
 
             # Iterate over the training data
             for x_batch, y_batch in train_dataset:
@@ -75,6 +75,8 @@ class LogisticRegression(tf.Module):
                 batch_acc = self.accuracy(y_pred_batch, y_batch)
                 # Update the parameters with respect to the gradient calculations
                 grads = tape.gradient(batch_loss, self.variables)
+
+
                 for g, v in zip(grads, self.variables):
                     v.assign_sub(learning_rate * g)
                 # Keep track of batch-level training performance
@@ -82,22 +84,22 @@ class LogisticRegression(tf.Module):
                 batch_accs_train.append(batch_acc)
 
             # Iterate over the testing data
-            for x_batch, y_batch in test_dataset:
+            for x_batch, y_batch in valid_dataset:
                 y_pred_batch = self(x_batch)
                 batch_loss = self.log_loss(y_pred_batch, y_batch)
                 batch_acc = self.accuracy(y_pred_batch, y_batch)
                 # Keep track of batch-level testing performance
-                batch_losses_test.append(batch_loss)
-                batch_accs_test.append(batch_acc)
+                batch_losses_valid.append(batch_loss)
+                batch_accs_valid.append(batch_acc)
 
             # Keep track of epoch-level model performance
             train_loss, train_acc = tf.reduce_mean(batch_losses_train), tf.reduce_mean(batch_accs_train)
-            test_loss, test_acc = tf.reduce_mean(batch_losses_test), tf.reduce_mean(batch_accs_test)
+            valid_loss, valid_acc = tf.reduce_mean(batch_losses_valid), tf.reduce_mean(batch_accs_valid)
             train_losses.append(train_loss)
             train_accs.append(train_acc)
-            test_losses.append(test_loss)
-            test_accs.append(test_acc)
+            valid_losses.append(valid_loss)
+            valid_accs.append(valid_acc)
             if epoch % 20 == 0:
                 print(f"Epoch: {epoch}, Training log loss: {train_loss:.3f}")
 
-        return train_losses, test_losses, train_accs, test_accs
+        return train_losses, valid_losses, train_accs, valid_accs

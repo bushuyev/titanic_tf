@@ -32,22 +32,23 @@ def main(data = "data/train.csv"):
 
     # print(raw_data.head())
 
-    train_data= prepare_data(raw_data)
+    all_data= prepare_data(raw_data)
 
-    # test_data = prepare_data(pd.read_csv("data/test.csv"))
+    test_data = prepare_data(pd.read_csv("data/test_.csv"))
 
-    corr_plot(train_data)
+    corr_plot(all_data)
 
-    tmp_train = train_data.sample(frac=0.75, random_state=1)
-    test_data = train_data.drop(tmp_train.index)
-    train_data = tmp_train
+    train_data = all_data.sample(frac=0.75, random_state=1)
+    valid_data = all_data.drop(train_data.index)
+
 
     print(train_data.info())
 
     print(train_data.head(10))
 
     x_train, y_train = train_data.iloc[:, 1:], train_data.iloc[:, 0].to_frame()
-    x_test, y_test = test_data.iloc[:, 1:], test_data.iloc[:, 0].to_frame()
+    x_valid, y_valid = valid_data.iloc[:, 1:], valid_data.iloc[:, 0].to_frame()
+    x_test,  y_test = test_data.iloc[:, 1:], test_data.iloc[:, 0].to_frame()
 
 
     print(x_train.head(10))
@@ -58,8 +59,8 @@ def main(data = "data/train.csv"):
     print(type(y_train))
     print("+++++++++++++++++++++++++++++++")
 
-    # print(x_test.head())
-    # print(y_test.head())
+    # print(x_valid.head())
+    # print(y_valid.head())
 
 
     # print(train_data[['Pclass', 'Survived']].groupby(['Pclass'], as_index=False).mean().sort_values(by='Survived', ascending=False))
@@ -67,18 +68,20 @@ def main(data = "data/train.csv"):
 
 
     x_train, y_train = tf.convert_to_tensor(x_train, dtype=tf.float32), tf.convert_to_tensor(y_train, dtype=tf.float32)
-    x_test, y_test = tf.convert_to_tensor(x_test, dtype=tf.float32), tf.convert_to_tensor(y_test, dtype=tf.float32)
+    x_valid, y_valid = tf.convert_to_tensor(x_valid, dtype=tf.float32), tf.convert_to_tensor(y_valid, dtype=tf.float32)
+    x_test,  y_test = tf.convert_to_tensor(x_test, dtype=tf.float32),  tf.convert_to_tensor(y_test, dtype=tf.float32)
 
     # sns.pairplot(train_data, hue = 'Survived', diag_kind='kde');
     print(train_data.describe().transpose()[:10])
 
     norm_x = Normalize(x_train)
     x_train_norm = norm_x.norm(x_train)
+    x_valid_norm =  norm_x.norm(x_valid)
     x_test_norm =  norm_x.norm(x_test)
 
     log_reg = LogisticRegression()
 
-    y_pred = log_reg(x_train_norm[:5], train=False)
+    # y_pred = log_reg(x_train_norm[:5], train=False)
     # print(y_pred.numpy())
 
 
@@ -87,26 +90,23 @@ def main(data = "data/train.csv"):
     train_dataset = tf.data.Dataset.from_tensor_slices((x_train_norm, y_train))
     train_dataset = train_dataset.shuffle(buffer_size=x_train.shape[0]).batch(batch_size)
 
-    test_dataset = tf.data.Dataset.from_tensor_slices((x_test_norm, y_test))
-    test_dataset = test_dataset.shuffle(buffer_size=x_test.shape[0]).batch(batch_size)
+    valid_dataset = tf.data.Dataset.from_tensor_slices((x_valid_norm, y_valid))
+    valid_dataset = valid_dataset.shuffle(buffer_size=x_valid.shape[0]).batch(batch_size)
 
 
     # --------------------------------------------------------------------------------------
-    # Set training parameters
-
     epochs = 200
 
-
-
-    train_losses, test_losses, train_accs, test_accs = log_reg.train(epochs, train_dataset, test_dataset)
+    train_losses, test_losses, train_accs, test_accs = log_reg.train(epochs, train_dataset, valid_dataset)
     # --------------------------------------------------------------------------------------
     range_train_test_plot(epochs, train_losses, test_losses, "loss")
     range_train_test_plot(epochs, train_accs, test_accs, "accuracy")
 
 
-    y_pred_train, y_pred_test = log_reg(x_train_norm, train=False), log_reg(x_test_norm, train=False)
-    train_classes, test_classes = log_reg.predict_class(y_pred_train), log_reg.predict_class(y_pred_test)
+    y_pred_train, y_pred_valid, y_pred_test = log_reg(x_train_norm, train=False), log_reg(x_valid_norm, train=False), log_reg(x_test_norm, train=False)
+    train_classes, valid_classes, test_classes = log_reg.predict_class(y_pred_train), log_reg.predict_class(y_pred_valid), log_reg.predict_class(y_pred_test)
     confusion_matrix_plot(y_train, train_classes, 'Training')
+    confusion_matrix_plot(y_test, test_classes, 'Test')
 
 
 

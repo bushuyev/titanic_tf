@@ -12,10 +12,10 @@ def corr_plot(train_data):
                 square=True, ax=ax)
     plt.show()
 
-def confusion_matrix_plot(y, y_classes, typ):
+def confusion_matrix_plot(y_true, y_classes, typ):
     # Compute the confusion matrix and normalize it
     plt.figure(figsize=(10,10))
-    confusion = sk_metrics.confusion_matrix(y.numpy(), y_classes.numpy())
+    confusion = sk_metrics.confusion_matrix(y_true.numpy(), y_classes.numpy())
     confusion_normalized = confusion / confusion.sum(axis=1, keepdims=True)
     axis_labels = range(2)
     ax = sns.heatmap(
