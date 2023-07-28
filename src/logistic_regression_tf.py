@@ -7,6 +7,10 @@ class Normalize(tf.Module):
         super().__init__()
         self.mean = tf.Variable(tf.math.reduce_mean(x, axis=0), name="Mean")
         self.std = tf.Variable(tf.math.reduce_std(x, axis=0), name="Std")
+        # https://stats.stackexchange.com/a/391847
+        self.std = tf.where(tf.equal(self.std, 0), tf.ones_like(self.std), self.std)
+
+        # tf.print(self.std, summarize=-1)
 
     def norm(self, x):
         # Normalize the input
@@ -58,7 +62,7 @@ class LogisticRegression(tf.Module):
         ce = tf.nn.sigmoid_cross_entropy_with_logits(labels=y, logits=y_pred)
         return tf.reduce_mean(ce)
 
-    def train(self, epochs, train_dataset, valid_dataset, learning_rate = 0.01):
+    def train(self, epochs, train_dataset, valid_dataset, learning_rate = 0.005):
 
         train_losses, valid_losses = [], []
         train_accs, valid_accs = [], []
