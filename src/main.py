@@ -118,8 +118,8 @@ def main(data = "data/train.csv", test_data = "data/test.csv", submission_dst = 
     range_train_test_plot(epochs, train_accs, valid_accs, "accuracy")
 
 
-    y_pred_train, y_pred_valid, y_pred_test, y_pred_test_ = log_reg(x_train_norm, train=False), log_reg(x_valid_norm, train=False), log_reg(x_test_norm, train=False), log_reg(x_test_norm_, train=False)
-    train_classes, valid_classes, test_classes, test_classes_ = log_reg.predict_class(y_pred_train), log_reg.predict_class(y_pred_valid), log_reg.predict_class(y_pred_test), log_reg.predict_class(y_pred_test_)
+    y_pred_train, y_pred_valid, y_pred_test = log_reg(x_train_norm, train=False), log_reg(x_valid_norm, train=False), log_reg(x_test_norm, train=False) #, y_pred_test_ = , log_reg(x_test_norm_, train=False)
+    train_classes, valid_classes, test_classes = log_reg.predict_class(y_pred_train), log_reg.predict_class(y_pred_valid), log_reg.predict_class(y_pred_test) #, test_classes_ log_reg.predict_class(y_pred_test_)
     confusion_matrix_plot(y_train, train_classes, 'Training')
     # confusion_matrix_plot(y_test_, test_classes_, 'Test')
     # confusion_matrix_plot(y_valid, valid_classes, 'Validation')
